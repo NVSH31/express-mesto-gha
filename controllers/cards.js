@@ -31,7 +31,12 @@ module.exports.deleteCard = (req, res) => {
       }
       return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
     })
-    .catch(() => res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
+      }
+      return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+    });
 };
 
 module.exports.likeCard = (req, res) => {

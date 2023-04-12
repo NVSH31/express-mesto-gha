@@ -9,7 +9,7 @@ const BAD_REQUEST = {
 
 const NOT_FOUND = {
   code: 404,
-  message: 'карточка или пользователь не найден',
+  message: 'карточка, пользователь или эндпоинт не найдены',
 };
 
 const SERVER_ERROR = {
