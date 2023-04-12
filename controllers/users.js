@@ -12,13 +12,13 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => res.status(OK).send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+    .then((user) => {
+      if (user) {
+        return res.status(OK).send(user);
       }
-      return res.status(SERVER_ERROR.code).send(SERVER_ERROR.message);
-    });
+      return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+    })
+    .catch(() => res.status(SERVER_ERROR.code).send(SERVER_ERROR.message));
 };
 
 module.exports.createUser = (req, res) => {
@@ -37,7 +37,7 @@ const updateUser = (req, res, body) => {
   User.findByIdAndUpdate(
     req.user._id,
     body,
-    { new: true },
+    { new: true, runValidators: true },
   )
     .then((user) => res.status(OK).send(user))
     .catch((err) => {

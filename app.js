@@ -8,6 +8,8 @@ const cardRouter = require('./routes/cards');
 
 const { PORT = 3000 } = process.env;
 
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+
 app.use((req, res, next) => {
   req.user = {
     _id: '6436458f0003791829e3edeb',
@@ -20,7 +22,5 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
-
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
 app.listen(PORT);

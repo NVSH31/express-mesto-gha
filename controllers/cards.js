@@ -39,7 +39,7 @@ module.exports.likeCard = (req, res) => {
     {
       $addToSet: { likes: req.user._id },
     },
-    { new: true },
+    { new: true, runValidators: true },
   )
     .then((cards) => res.status(OK).send(cards))
     .catch((err) => {
