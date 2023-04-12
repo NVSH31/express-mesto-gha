@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 const {
-  OK, BAD_REQUEST, NOT_FOUND, SERVER_ERROR,
+  OK, NO_CONTENT, BAD_REQUEST, NOT_FOUND, SERVER_ERROR,
 } = require('../utils/statuses');
 
 module.exports.getCards = (req, res) => {
@@ -26,7 +26,8 @@ module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (card) {
-        return res.status(NOT_FOUND);
+        res.redirect('/cards');
+        return res.status(NO_CONTENT);
       }
       return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
     })
