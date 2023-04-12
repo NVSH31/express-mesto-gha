@@ -7,7 +7,7 @@ const {
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(OK).send(users))
-    .catch(() => res.status(SERVER_ERROR.code).send(SERVER_ERROR.message));
+    .catch(() => res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message }));
 };
 
 module.exports.getUser = (req, res) => {
@@ -18,7 +18,13 @@ module.exports.getUser = (req, res) => {
       }
       return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
     })
-    .catch(() => res.status(SERVER_ERROR.code).send(SERVER_ERROR.message));
+    .catch((err) => {
+      console.log('err.name = ', err.name);
+      if (err.name === 'CastError') {
+        return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
+      }
+      return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+    });
 };
 
 module.exports.createUser = (req, res) => {
@@ -29,7 +35,7 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
       }
-      return res.status(SERVER_ERROR.code).send(SERVER_ERROR.message);
+      return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
     });
 };
 
@@ -49,7 +55,7 @@ const updateUser = (req, res, body) => {
       if (err.name === 'ValidationError') {
         return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
       }
-      return res.status(SERVER_ERROR.code).send(SERVER_ERROR.message);
+      return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
     });
 };
 

@@ -7,7 +7,7 @@ module.exports.getCards = (req, res) => {
   Card.find({})
     .populate(['owner', 'likes'])
     .then((cards) => res.status(OK).send(cards))
-    .catch(() => res.status(SERVER_ERROR.code).send(SERVER_ERROR.message));
+    .catch(() => res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -18,7 +18,7 @@ module.exports.createCard = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
       }
-      return res.status(SERVER_ERROR.code).send(SERVER_ERROR.message);
+      return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
     });
 };
 
@@ -30,7 +30,7 @@ module.exports.deleteCard = (req, res) => {
       }
       return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
     })
-    .catch(() => res.status(SERVER_ERROR.code).send(SERVER_ERROR.message));
+    .catch(() => res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message }));
 };
 
 module.exports.likeCard = (req, res) => {
@@ -48,10 +48,10 @@ module.exports.likeCard = (req, res) => {
       return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
       }
-      return res.status(SERVER_ERROR.code).send(SERVER_ERROR.message);
+      return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
     });
 };
 
@@ -70,9 +70,9 @@ module.exports.dislikeCard = (req, res) => {
       return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
       }
-      return res.status(SERVER_ERROR.code).send(SERVER_ERROR.message);
+      return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
     });
 };
