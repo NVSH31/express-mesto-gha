@@ -24,13 +24,13 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .then(() => res.status(OK))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+    .then((card) => {
+      if (card) {
+        return res.status(NOT_FOUND);
       }
-      return res.status(SERVER_ERROR.code).send(SERVER_ERROR.message);
-    });
+      return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+    })
+    .catch(() => res.status(SERVER_ERROR.code).send(SERVER_ERROR.message));
 };
 
 module.exports.likeCard = (req, res) => {
@@ -41,11 +41,13 @@ module.exports.likeCard = (req, res) => {
     },
     { new: true, runValidators: true },
   )
-    .then((cards) => res.status(OK).send(cards))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+    .then((card) => {
+      if (card) {
+        return res.status(OK).send(card);
       }
+      return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+    })
+    .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
       }
@@ -61,11 +63,13 @@ module.exports.dislikeCard = (req, res) => {
     },
     { new: true },
   )
-    .then((cards) => res.status(OK).send(cards))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+    .then((card) => {
+      if (card) {
+        return res.status(OK).send(card);
       }
+      return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+    })
+    .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
       }

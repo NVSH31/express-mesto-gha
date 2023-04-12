@@ -39,11 +39,13 @@ const updateUser = (req, res, body) => {
     body,
     { new: true, runValidators: true },
   )
-    .then((user) => res.status(OK).send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+    .then((user) => {
+      if (user) {
+        return res.status(OK).send(user);
       }
+      return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+    })
+    .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
       }
