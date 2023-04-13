@@ -19,7 +19,6 @@ module.exports.getUser = (req, res) => {
       return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
     })
     .catch((err) => {
-      console.log('err.name = ', err.name);
       if (err.name === 'CastError') {
         return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
       }
@@ -33,7 +32,7 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.status(CREATE).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
+        return res.status(BAD_REQUEST.code).send({ message: err.message });
       }
       return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
     });
@@ -53,7 +52,7 @@ const updateUser = (req, res, body) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
+        return res.status(BAD_REQUEST.code).send({ message: err.message });
       }
       return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
     });
