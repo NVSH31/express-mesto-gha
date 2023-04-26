@@ -17,6 +17,11 @@ const NOT_FOUND = {
   message: 'карточка, пользователь или эндпоинт не найдены',
 };
 
+const UNIQUE_FIELD = {
+  code: 409,
+  message: 'значение уже используется',
+};
+
 const SERVER_ERROR = {
   code: 500,
   message: 'ошибка по-умолчанию',
@@ -30,4 +35,5 @@ module.exports = {
   BAD_REQUEST,
   NOT_FOUND,
   SERVER_ERROR,
+  UNIQUE_FIELD,
 };

@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const { errors, celebrate, Joi } = require('celebrate');
+const { UNIQUE_FIELD } = require('./utils/statuses');
 
 const app = express();
 const { createUser, login } = require('./controllers/users');
@@ -20,19 +22,41 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post('/signup', createUser);
-app.post('/signin', login);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(6),
+  }),
+}), createUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(6),
+  }),
+}), login);
 
 app.use(auth);
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
 // app.use((req, res) => res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message }));
 
-app.use((err, req, res, next) => {
-  console.log('err =', err);
-  console.log('err.statusCode =', err.statusCode);
+app.use(errors());
 
-  const { statusCode = 500, message } = err;
+app.use((err, req, res, next) => {
+  // console.log('err =', err);
+  // console.log('err.statusCode =', err.statusCode);
+  let statusCode;
+  let message;
+  if (err.code === 11000) {
+    // err.statusCode = UNIQUE_FIELD.code;
+    // err.message = UNIQUE_FIELD.message;
+    statusCode = UNIQUE_FIELD.code;
+    message = UNIQUE_FIELD.message;
+  } else {
+    // const { statusCode = 500, message } = err;
+    statusCode = err.code || 500;
+    message = err.message;
+  }
   // console.log('err.statusCode =', err.statusCode);
   res
     .status(statusCode)
