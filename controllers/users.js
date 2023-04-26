@@ -15,7 +15,7 @@ const { SECRET_KEY = 'my_secret_key' } = process.env;
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
+  return User.findUserByCredentials(email, password, next)
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
@@ -91,7 +91,17 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       email, password: hash, name, about, avatar,
     }))
-    .then((user) => res.status(CREATE).send(user))
+    .then((user) => {
+      // const newUser = user.toObject();
+      // delete newUser.password;
+      // res.status(CREATE).send(newUser);
+      res.status(CREATE).send({
+        email: user.email,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+      });
+    })
     .catch(next);
   // .catch((err) => {
   //   if (err.name === 'ValidationError') {

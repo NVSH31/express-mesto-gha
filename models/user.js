@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
 const bcrypt = require('bcrypt');
 const BadRequestError = require('../errors/bad-request-error');
+const NotFoundError = require('../errors/not-found-error');
+const { NOT_FOUND } = require('../utils/statuses');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -13,8 +15,8 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'это поле обязательно'],
-    select: false,
     minlength: [6, 'должно быть не менее 6 символов'],
+    select: false,
   },
   name: {
     type: String,
@@ -35,21 +37,22 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.findUserByCredentials = function (email, password) {
+userSchema.statics.findUserByCredentials = function (email, password, next) {
   return this.findOne({ email })
     .select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new BadRequestError('Неправильные почта или пароль'));
+        throw new NotFoundError(NOT_FOUND.message);
       }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new BadRequestError('Неправильные почта или пароль'));
+            throw new BadRequestError('Неправильные почта или пароль');
           }
           return user;
         });
-    });
+    })
+    .catch(next);
 };
 
 module.exports = mongoose.model('user', userSchema);

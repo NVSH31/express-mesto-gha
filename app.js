@@ -28,7 +28,7 @@ app.post('/signup', celebrate({
     password: Joi.string().required().min(6),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().required().min(2).max(30), // сделать валидацию на ссылку
+    avatar: Joi.string().min(2).max(30), // сделать валидацию на ссылку
   }),
 }), createUser);
 app.post('/signin', celebrate({
@@ -46,8 +46,9 @@ app.use('/cards', cardRouter);
 app.use(errors());
 
 app.use((err, req, res, next) => {
-  // console.log('err =', err);
-  // console.log('err.statusCode =', err.statusCode);
+  console.log('err =', err);
+  console.log('err.code =', err.code);
+  console.log('err.statusCode =', err.statusCode);
   let statusCode;
   let message;
   if (err.code === 11000) {
@@ -57,7 +58,7 @@ app.use((err, req, res, next) => {
     message = UNIQUE_FIELD.message;
   } else {
     // const { statusCode = 500, message } = err;
-    statusCode = err.code || 500;
+    statusCode = err.statusCode || err.code || 500;
     message = err.message;
   }
   // console.log('err.statusCode =', err.statusCode);
