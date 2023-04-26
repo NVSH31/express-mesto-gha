@@ -1,45 +1,71 @@
 const Card = require('../models/card');
 const {
-  OK, NO_CONTENT, BAD_REQUEST, NOT_FOUND, SERVER_ERROR,
+  OK, NO_CONTENT, UNAUTHORIZED, NOT_FOUND,
+  // BAD_REQUEST, SERVER_ERROR,
 } = require('../utils/statuses');
+// const BadRequestError = require('../errors/bad-request-error');
+const UnauthorizedError = require('../errors/unauthorized-error');
+const NotFoundError = require('../errors/not-found-error');
+// const UniqueError = require('../errors/unique-error');
+// const ServerError = require('../errors/server-error');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .populate(['owner', 'likes'])
     .then((cards) => res.status(OK).send(cards))
-    .catch(() => res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message }));
+    .catch(next);
+  // .catch(() => res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message }));
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(OK).send(card))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(BAD_REQUEST.code).send({ message: err.message });
-      }
-      return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
-    });
+    .catch(next);
+  // .catch((err) => {
+  //   if (err.name === 'ValidationError') {
+  //     return res.status(BAD_REQUEST.code).send({ message: err.message });
+  //   }
+  //   return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+  // });
 };
 
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+module.exports.deleteCard = (req, res, next) => {
+  Card.findById(req.params.cardId)
     .then((card) => {
-      if (card) {
-        res.redirect('/cards');
-        return res.status(NO_CONTENT);
+      if (!card) {
+        throw new NotFoundError(NOT_FOUND.message);
       }
-      return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+      if (card.owner.toString() !== req.user._id) {
+        throw new UnauthorizedError(UNAUTHORIZED.message);
+      }
+      Card.findByIdAndRemove(req.params.cardId)
+        .then(() => res.status(NO_CONTENT).send())
+        .catch(next);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
-      }
-      return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
-    });
+    .catch(next);
+
+  // .then((card) => {
+  //   if (card && (card.owner.toString() === req.user._id)) {
+  //     console.log('card =', card, ' req.user._id =', req.user._id);
+  //     Card.findByIdAndRemove(req.params.cardId)
+  //       .then(() => {
+  //         // res.redirect('/cards');
+  //         res.status(NO_CONTENT);
+  //       });
+  //   }
+  //   return res.status(UNAUTHORIZED.code).send({ message: UNAUTHORIZED.message });
+  // })
+  // .catch((err) => {
+  //   console.log('err =', err);
+  //   if (err.name === 'CastError') {
+  //     return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
+  //   }
+  //   return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+  // });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     {
@@ -51,17 +77,19 @@ module.exports.likeCard = (req, res) => {
       if (card) {
         return res.status(OK).send(card);
       }
-      return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+      throw new NotFoundError(NOT_FOUND.message);
+      // return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
-      }
-      return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
-    });
+    .catch(next);
+  // .catch((err) => {
+  //   if (err.name === 'CastError') {
+  //     return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
+  //   }
+  //   return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+  // });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     {
@@ -73,12 +101,14 @@ module.exports.dislikeCard = (req, res) => {
       if (card) {
         return res.status(OK).send(card);
       }
-      return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
+      throw new NotFoundError(NOT_FOUND.message);
+      // return res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
-      }
-      return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
-    });
+    .catch(next);
+  // .catch((err) => {
+  //   if (err.name === 'CastError') {
+  //     return res.status(BAD_REQUEST.code).send({ message: BAD_REQUEST.message });
+  //   }
+  //   return res.status(SERVER_ERROR.code).send({ message: SERVER_ERROR.message });
+  // });
 };

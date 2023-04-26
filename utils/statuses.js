@@ -7,6 +7,11 @@ const BAD_REQUEST = {
   message: 'переданы некорректные данные',
 };
 
+const UNAUTHORIZED = {
+  code: 401,
+  message: 'ошибка доступа',
+};
+
 const NOT_FOUND = {
   code: 404,
   message: 'карточка, пользователь или эндпоинт не найдены',
@@ -21,6 +26,7 @@ module.exports = {
   OK,
   CREATE,
   NO_CONTENT,
+  UNAUTHORIZED,
   BAD_REQUEST,
   NOT_FOUND,
   SERVER_ERROR,
