@@ -1,10 +1,11 @@
 const Card = require('../models/card');
 const {
-  OK, NO_CONTENT, UNAUTHORIZED, NOT_FOUND,
-  // BAD_REQUEST, SERVER_ERROR,
+  OK, NOT_FOUND, FORBIDDEN,
+  // BAD_REQUEST, SERVER_ERROR, NO_CONTENT, UNAUTHORIZED,
 } = require('../utils/statuses');
 // const BadRequestError = require('../errors/bad-request-error');
-const UnauthorizedError = require('../errors/unauthorized-error');
+// const UnauthorizedError = require('../errors/unauthorized-error');
+const ForbiddenError = require('../errors/forbidden-error');
 const NotFoundError = require('../errors/not-found-error');
 // const UniqueError = require('../errors/unique-error');
 // const ServerError = require('../errors/server-error');
@@ -37,10 +38,10 @@ module.exports.deleteCard = (req, res, next) => {
         throw new NotFoundError(NOT_FOUND.message);
       }
       if (card.owner.toString() !== req.user._id) {
-        throw new UnauthorizedError(UNAUTHORIZED.message);
+        throw new ForbiddenError(FORBIDDEN.message);
       }
       Card.findByIdAndRemove(req.params.cardId)
-        .then(() => res.status(NO_CONTENT).send())
+        .then(() => res.status(OK).send({ message: 'карточка удалена' }))
         .catch(next);
     })
     .catch(next);

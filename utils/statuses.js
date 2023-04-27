@@ -12,6 +12,11 @@ const UNAUTHORIZED = {
   message: 'ошибка доступа',
 };
 
+const FORBIDDEN = {
+  code: 403,
+  message: 'недостаточно прав',
+};
+
 const NOT_FOUND = {
   code: 404,
   message: 'карточка, пользователь или эндпоинт не найдены',
@@ -32,6 +37,7 @@ module.exports = {
   CREATE,
   NO_CONTENT,
   UNAUTHORIZED,
+  FORBIDDEN,
   BAD_REQUEST,
   NOT_FOUND,
   SERVER_ERROR,
