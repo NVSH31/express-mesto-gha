@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { errors, celebrate, Joi } = require('celebrate');
 const { UNIQUE_FIELD, NOT_FOUND } = require('./utils/statuses');
-// const { url } = require('./utils/const');
 const {
   validateEmail, validatePassword, validateUserNameAbout, validateAvatarSignup,
 } = require('./validators/validators');
@@ -29,11 +28,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
-    // email: Joi.string().required().email(),
-    // password: Joi.string().required().min(6),
-    // name: Joi.string().min(2).max(30),
-    // about: Joi.string().min(2).max(30),
-    // avatar: Joi.string().regex(url).min(2),
     email: validateEmail,
     password: validatePassword,
     name: validateUserNameAbout,
@@ -43,8 +37,6 @@ app.post('/signup', celebrate({
 }), createUser);
 app.post('/signin', celebrate({
   body: Joi.object().keys({
-    // email: Joi.string().required().email(),
-    // password: Joi.string().required().min(6),
     email: validateEmail,
     password: validatePassword,
   }),
