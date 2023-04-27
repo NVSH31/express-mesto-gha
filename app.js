@@ -7,8 +7,7 @@ const { errors, celebrate, Joi } = require('celebrate');
 const { UNIQUE_FIELD, NOT_FOUND } = require('./utils/statuses');
 // const { url } = require('./utils/const');
 const {
-  validateEmail, validatePassword, validateUserNameAbout,
-  validateUrlAvatar, validateAvatarSignup,
+  validateEmail, validatePassword, validateUserNameAbout, validateAvatarSignup,
 } = require('./validators/validators');
 
 const app = express();
