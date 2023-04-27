@@ -12,7 +12,7 @@ router.get('/', auth, getCards);
 router.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().regex(url).min(2), // сделать валидацию на ссылку
+    link: Joi.string().required().regex(url).min(2),
   }),
 }), auth, createCard);
 router.delete('/:cardId', celebrate({

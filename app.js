@@ -11,7 +11,6 @@ const app = express();
 const { createUser, login } = require('./controllers/users');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
-// const { auth } = require('./middlewares/auth');
 const NotFoundError = require('./errors/not-found-error');
 
 const { PORT = 3000 } = process.env;
@@ -29,7 +28,7 @@ app.post('/signup', celebrate({
     password: Joi.string().required().min(6),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(url).min(2), // сделать валидацию на ссылку
+    avatar: Joi.string().regex(url).min(2),
   }),
 }), createUser);
 app.post('/signin', celebrate({
@@ -39,34 +38,24 @@ app.post('/signin', celebrate({
   }),
 }), login);
 
-// app.use(auth);
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
 app.use('*', () => {
-  // res.status(NOT_FOUND.code).send({ message: NOT_FOUND.message });
-  console.log('Это неизвестный роут ');
   throw new NotFoundError(NOT_FOUND.message);
 });
 
 app.use(errors());
 
 app.use((err, req, res, next) => {
-  // console.log('err =', err);
-  // console.log('err.code =', err.code);
-  // console.log('err.statusCode =', err.statusCode);
   let statusCode;
   let message;
   if (err.code === 11000) {
-    // err.statusCode = UNIQUE_FIELD.code;
-    // err.message = UNIQUE_FIELD.message;
     statusCode = UNIQUE_FIELD.code;
     message = UNIQUE_FIELD.message;
   } else {
-    // const { statusCode = 500, message } = err;
     statusCode = err.statusCode || err.code || 500;
     message = err.message;
   }
-  // console.log('err.statusCode =', err.statusCode);
   res
     .status(statusCode)
     .send({

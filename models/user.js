@@ -3,8 +3,8 @@ const isEmail = require('validator/lib/isEmail');
 const isURL = require('validator/lib/isURL');
 const bcrypt = require('bcrypt');
 const BadRequestError = require('../errors/bad-request-error');
-const NotFoundError = require('../errors/not-found-error');
-const { NOT_FOUND } = require('../utils/statuses');
+const UnauthorizedError = require('../errors/unauthorized-error');
+const { UNAUTHORIZED } = require('../utils/statuses');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -44,7 +44,7 @@ userSchema.statics.findUserByCredentials = function (email, password, next) {
     .select('+password')
     .then((user) => {
       if (!user) {
-        throw new NotFoundError(NOT_FOUND.message);
+        throw new UnauthorizedError(UNAUTHORIZED.message);
       }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
