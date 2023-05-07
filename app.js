@@ -8,6 +8,7 @@ const { UNIQUE_FIELD, NOT_FOUND } = require('./utils/statuses');
 const {
   validateEmail, validatePassword, validateUserNameAbout, validateAvatarSignup,
 } = require('./validators/validators');
+const { requesLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
 const { createUser, login } = require('./controllers/users');
@@ -25,6 +26,8 @@ app.use(cookieParser());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(requesLogger);
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -47,6 +50,8 @@ app.use('/cards', cardRouter);
 app.use('*', () => {
   throw new NotFoundError(NOT_FOUND.message);
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 
